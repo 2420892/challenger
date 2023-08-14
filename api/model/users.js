@@ -1,5 +1,9 @@
 // user will have all the metods we will have on our database
 const db = require("../config")
+// hash function allows password encryption. Compare allows us to check the password against the encrypt password.
+const{hash,compare,hashSync}=require('bcrypt')
+const {createToken} = require('../middleware/authenticateuser')
+
 class Users{
     fetchUsers(req,res){
         const query = `
@@ -32,8 +36,33 @@ class Users{
     login(req,res){
 
     }
-    register(req,res){
-
+    async register(req,res){
+        const data = req.body
+        // encrypt password
+        data.userPass = await hash(data.userPass,15)
+        // payload (userdata)
+        const user = {
+            emailAdd : data.emailAdd,
+            userPass : data.userPass
+        }
+        // query
+        const query =`
+        INSERT INTO Users
+        SET ?;
+        `
+        db.query(query,[data], (err)=>{
+        if(err) throw err
+        // create token
+        let token = createToken(user)
+        res.cookie("LegitUseer",token,{
+            maxAge : 3600000,
+            httpOnly : true
+        })
+        res.json({
+            status : res.statusCode,
+            msg: "you are now registered."
+        })
+    })
     }
     updateUser(req,res){
         const query =`
