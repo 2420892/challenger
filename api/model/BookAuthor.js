@@ -1,12 +1,12 @@
-const db = require("../config");
-
-class Books {
-    fetchBooks(req, res) {
+// books
+const db = require("../config")
+class BookAuthor{
+    fetchBookAuthor(req, res) {
         const query = `
-        SELECT bookID, bookTitle, category, bookURL
-        FROM Books;
+        SELECT a.id, a.authourName, a.authorSurname, b.bookID
+        FROM BookAuthor AS a
+        JOIN Books AS b ON b.bookID = a.bookID;
         `;
-
         db.query(query, (err, results) => {
             if (err) throw err;
             res.json({
@@ -15,12 +15,13 @@ class Books {
             });
         });
     }
-
-    fetchBook(req, res) {
+    // fetch single author
+    fetchBookAuthor(req, res) {
         const query = `
-        SELECT bookID, bookTitle, category, bookURL
-        FROM Books
-        WHERE bookID = ${req.params.id};
+        SELECT a.id, a.authourName, a.authorSurname, b.bookID
+        FROM BookAuthor AS a
+        JOIN Books AS b ON b.bookID = a.bookID
+        WHERE a.id = ${req.params.id}
         `;
         
         db.query(query, (err, result) => {
@@ -31,10 +32,10 @@ class Books {
             });
         });
     }
-
-    registerBook(req, res) {
+// register an author
+    registerBookAuthor(req, res) {
         const query = `
-        INSERT INTO Books
+        INSERT INTO BookAuthor
         SET ?;
         `;
 
@@ -42,41 +43,40 @@ class Books {
             if (err) throw err;
             res.json({
                 status: res.statusCode,
-                msg: "The book was added."
+                msg: "The Author was added."
             });
         });
     }
-
-    updateBook(req, res) {
+// update an authothor
+    updateBookAuthor(req, res) {
         const query = `
-        UPDATE Books
+        UPDATE BookAuthor
         SET ?
-        WHERE bookID = ?;
+        WHERE id = ?;
         `;
 
         db.query(query, [req.body, req.params.id], (err) => {
             if (err) throw err;
             res.json({
                 status: res.statusCode,
-                msg: "The book record was updated."
+                msg: "The author record was updated."
             });
         });
     }
-
-    deleteBook(req, res) {
+// delete
+    deleteBookAuthor(req, res) {
         const query = `
-        DELETE FROM Books
-        WHERE bookID = ${req.params.id};
+        DELETE FROM BookAuthor
+        WHERE id = ${req.params.id};
         `;
 
         db.query(query, (err) => {
             if (err) throw err;
             res.json({
                 status: res.statusCode,
-                msg: "A book record was deleted."
+                msg: "An author record was deleted."
             });
         });
     }
 }
-
-module.exports = Books;
+module.exports =BookAuthor
