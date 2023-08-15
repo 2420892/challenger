@@ -33,8 +33,56 @@ class Users{
             })
         })
     }
-    login(req,res){
-
+    login(req, res) {
+        const {emailAdd, userPass} = req.body
+        // query
+        const query = `
+        SELECT firstName, lastName,
+        gender, userDOB, emailAdd, userPass,
+        profileUrl
+        FROM Users
+        WHERE emailAdd = ?;
+        `
+        db.query(query,[emailAdd] , async (err, result)=>{
+            if(err) throw err
+            if(!result?.length){
+                res.json({
+                    status: res.statusCode, 
+                    msg: "You provided a wrong email."
+                })
+            }else {
+                await compare(userPass,
+                    result[0].userPass,
+                    (cErr, cResult)=>{
+                        if(cErr) throw cErr
+                        // Create a token
+                        const token =
+                        createToken({
+                            emailAdd,
+                            userPass
+                        })
+                        // Save a token
+                        res.cookie("LegitUser",
+                        token, {
+                            maxAge: 3600000,
+                            httpOnly: true
+                        })
+                        if(cResult) {
+                            res.json({
+                                msg: "Logged in",
+                                token,
+                                result: result[0]
+                            })
+                        }else {
+                            res.json({
+                                status: res.statusCode,
+                                msg:
+                                "Invalid password or you have not registered"
+                            })
+                        }
+                    })
+            }
+        })
     }
     async register(req,res){
         const data = req.body
