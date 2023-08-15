@@ -62,7 +62,26 @@ routes.delete('/Order/:id', (req, res) => {
 // ======authors===
 routes.get('/BookAuthor', (req, res) => {
     BookAuthor.fetchBookAuthor(req, res);
-});
+})
+routes.get('/BookAuthor/:id',(req,res)=>{
+    BookAuthor.fetchBookAuthor(req,res)
+})
+routes.post('/registerBookAuthor', bodyParser.json(),
+(req,res)=>{
+    BookAuthor.registerBookAuthor(req,res)
+})
+routes.put('/BookAuthor/:id',bodyParser.json(),
+(req,res)=>{
+    BookAuthor.updateBookAuthor(req,res)
+})
+routes.patch('/BookAuthor/:id',bodyParser.json(),
+(req,res)=>{
+    BookAuthor.updateBookAuthor(req,res)
+})
+routes.delete('/BookAuthor/:id',(req,res)=>{
+    BookAuthor.deleteBookAuthor(req,res)
+})
+
 // =====user router==========
 routes.get('/users',(req,res)=>{
     users.fetchUsers(req,res)
